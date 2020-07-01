@@ -45,8 +45,9 @@ import java.util.Map;
  * @author manzarul
  */
 @ActorConfig(
-        tasks = {JsonKey.GENERATE_CERT, JsonKey.GET_SIGN_URL},
-        asyncTasks = {}
+  dispatcher = "cert-dispatcher",
+  tasks = {JsonKey.GENERATE_CERT, JsonKey.GET_SIGN_URL},
+  asyncTasks = {}
 )
 public class CertificateGeneratorActor extends BaseActor {
     private Logger logger = Logger.getLogger(CertificateGeneratorActor.class);
@@ -136,6 +137,13 @@ public class CertificateGeneratorActor extends BaseActor {
                 certStoreFactory.cleanUp(certificateResponse.getUuid(), directory);
             }
         }
+
+        try {
+          certStore.close();
+        } catch (Exception ex) {
+          logger.error("Exception occurred while closing connection.",ex);
+        }
+
         Response response = new Response();
         response.getResult().put("response", certUrlList);
         sender().tell(response, getSelf());

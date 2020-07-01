@@ -18,6 +18,7 @@ public class LocalStore implements ICertStore {
     private Logger logger = Logger.getLogger(LocalStore.class);
 
     private String domainUrl;
+    private CloudStorage cloudStorage = null;
 
     public LocalStore(String domainUrl) {
         this.domainUrl = domainUrl;
@@ -60,5 +61,11 @@ public class LocalStore implements ICertStore {
         }
         output.flush();
     }
+
+
+  @Override
+  public void close(){
+    cloudStorage.closeConnection();
+  }
 
 }

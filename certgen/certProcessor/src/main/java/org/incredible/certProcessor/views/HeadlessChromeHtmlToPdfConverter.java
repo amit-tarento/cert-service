@@ -19,7 +19,7 @@ public class HeadlessChromeHtmlToPdfConverter {
             boolean isWindows = operatingSystem.toLowerCase().startsWith("windows");
             boolean isMac = operatingSystem.contains("Mac OS X");
             String appInvokeCommand = "";
-            String appArgs = "--no-sandbox --headless --print-to-pdf=" + pdfFile.getAbsolutePath() + " " + htmlFile.getAbsolutePath();
+            String appArgs = "wkhtmltopdf " + htmlFile.getAbsolutePath() + " " + pdfFile.getAbsolutePath();
             Runtime rt = Runtime.getRuntime();
             logger.info("HeadlessChromeHtmlToPdfConverter: convert: operating system used is {}", operatingSystem);
             if (isWindows) {
@@ -29,8 +29,8 @@ public class HeadlessChromeHtmlToPdfConverter {
                 appInvokeCommand = "/Applications/Chromium.app/Contents/MacOS/Chromium";
                 process = rt.exec(appInvokeCommand + " " + appArgs);
             } else {
-                appInvokeCommand = "chromium-browser";
-                process = rt.exec(new String[]{"sh", "-c", appInvokeCommand + " " + appArgs});
+               // appInvokeCommand = "chromium-browser";
+                process = rt.exec(new String[]{"sh", "-c"," " + appArgs});
             }
 
             logger.info("Input stream ::: " + convertInputStreamToString(process.getInputStream()));

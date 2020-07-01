@@ -15,13 +15,16 @@ import java.io.File;
 
 public class AzureStore extends CloudStore {
 
-    private Logger logger = Logger.getLogger(AzureStore.class);
+  private Logger logger = Logger.getLogger(AzureStore.class);
 
-    private StoreConfig azureStoreConfig;
+  private StoreConfig azureStoreConfig;
 
-    private BaseStorageService storageService = null;
+  private BaseStorageService storageService = null;
 
-    public AzureStore(StoreConfig azureStoreConfig) {
+  private CloudStorage cloudStorage = null;
+
+
+  public AzureStore(StoreConfig azureStoreConfig) {
         this.azureStoreConfig = azureStoreConfig;
     }
 
@@ -32,14 +35,14 @@ public class AzureStore extends CloudStore {
         if (StringUtils.isNotBlank(azureStoreConfig.getAzureStoreConfig().getPath())) {
             stringBuilder.append(azureStoreConfig.getAzureStoreConfig().getPath() + "/");
         }
-        CloudStorage cloudStorage = new CloudStorage(storageService);
+        cloudStorage = new CloudStorage(storageService);
         int retryCount = Integer.parseInt(azureStoreConfig.getCloudRetryCount());
         return cloudStorage.uploadFile(azureStoreConfig.getAzureStoreConfig().getContainerName(), stringBuilder.toString(), file, false, retryCount);
     }
 
     @Override
     public void download(String fileName, String localPath) throws StorageServiceException {
-        CloudStorage cloudStorage = new CloudStorage(storageService);
+        cloudStorage = new CloudStorage(storageService);
         cloudStorage.downloadFile(azureStoreConfig.getAzureStoreConfig().getContainerName(), fileName, localPath, false);
     }
 
@@ -54,7 +57,11 @@ public class AzureStore extends CloudStore {
         } else {
             logger.error("StorageParams:init:provided cloud store type doesn't match supported storage devices:".concat(azureStoreConfig.getType()));
         }
+    }
 
+    @Override
+    public void close(){
+      cloudStorage.closeConnection();
     }
 }
 
